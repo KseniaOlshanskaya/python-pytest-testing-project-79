@@ -1,4 +1,6 @@
 import argparse
+from page_loader.download import download
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -8,6 +10,9 @@ def main():
     parser.add_argument('-o', '--output', help='output directory ')
 
     args = parser.parse_args()
+    file_path =download.download(args)
+
+    print(file_path)
 
 
 if __name__ == "__main__":
