@@ -33,15 +33,16 @@ def download_asset(url, path_to_save):
 
 
 def download_assets(soup, assets_dir_name):
-    for tag, attribute in ASSET_TAGS.items():
-        assets = soup.findAll(tag)
-        for a in assets:
-            if a.has_attr(attribute):
-                root, file_extension = os.path.splitext(a[attribute])
+    for tag_type, attribute in ASSET_TAGS.items():
+        asset_tags = soup.findAll(tag_type)
+        for tag in asset_tags:
+            if tag.has_attr(attribute):
+                root, file_extension = os.path.splitext(tag[attribute])
                 if file_extension in ASSETS_EXTENSIONS:
                     asset_name = modify_name(url=root, extension=file_extension)
                     full_asset_path = os.path.join(assets_dir_name, asset_name)
-                    download_asset(url=a[attribute], path_to_save=full_asset_path)
+                    tag[attribute] = full_asset_path
+                    download_asset(url=tag[attribute], path_to_save=full_asset_path)
 
 
 def download(url: str, output: str = None):
@@ -54,6 +55,8 @@ def download(url: str, output: str = None):
     page = requests.get(url)
     soup = BeautifulSoup(page.text, "html.parser")
     download_assets(soup=soup, assets_dir_name=assets_dir_name)
-    with open(full_file_path, "wb") as file:
-        file.write(page.content)
+    final_page = str(soup.prettify())
+
+    with open(full_file_path, "w", encoding="utf-8") as file:
+        file.write(final_page)
     return full_file_path
