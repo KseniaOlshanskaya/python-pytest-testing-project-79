@@ -24,6 +24,10 @@ def test_download_without_output():
     os.remove(expected_path)
     assert not os.path.exists(expected_path)
 
-
-
+def test_assets_folder_exists():
+    download(url='https://ru.hexlet.io/courses')
+    expected_assets_dir_path = (os.path.join(os.path.dirname(__file__), 'ru-hexlet-io-courses_files')
+                                .replace('tests', 'page_loader'))
+    assert os.path.exists(expected_assets_dir_path)
+    assert os.listdir(expected_assets_dir_path)
 

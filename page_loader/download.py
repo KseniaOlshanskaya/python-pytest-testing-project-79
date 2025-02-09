@@ -29,7 +29,7 @@ def download_asset(url, path_to_save):
             with open(path_to_save, 'wb') as f:
                 f.write(response.content)
     except requests.exceptions.RequestException as e:
-        pass  # logging
+        print("Не скачалось")
 
 
 def download_assets(soup, assets_dir_name):
@@ -41,8 +41,8 @@ def download_assets(soup, assets_dir_name):
                 if file_extension in ASSETS_EXTENSIONS:
                     asset_name = modify_name(url=root, extension=file_extension)
                     full_asset_path = os.path.join(assets_dir_name, asset_name)
-                    tag[attribute] = full_asset_path
                     download_asset(url=tag[attribute], path_to_save=full_asset_path)
+                    tag[attribute] = full_asset_path
 
 
 def download(url: str, output: str = None):
