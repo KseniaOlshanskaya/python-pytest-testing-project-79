@@ -10,8 +10,7 @@ def main():
     parser.add_argument('-o', '--output', help='output directory ')
 
     args = parser.parse_args()
-    file_path = download(args)
-    print(file_path)
+    file_path = download(url=args.url)
 
 
 if __name__ == "__main__":
