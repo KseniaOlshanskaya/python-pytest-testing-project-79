@@ -2,6 +2,7 @@ import os
 import pytest
 from page_loader.download import download
 from bs4 import BeautifulSoup
+import yaml
 
 
 
@@ -33,24 +34,19 @@ def test_assets_folder_exists():
     assert os.listdir(expected_assets_dir_path)
 
 def test_assets_href_change():
-    asset_tags = {"img": "src",
-                  "link": "href",
-                  "script": "src",
-                  "video": "src",
-                  "audio": "src",
-                  "source": "srcset"}
-    ASSETS_EXTENSIONS = ['.png', '.jpeg']
-    # TODO: forward to fixtures
+
+    with open('fixtures/test_assets_href_change.yaml', 'r') as f:
+        fixt = yaml.load(f, Loader=yaml.SafeLoader)
 
     file_path = download(url='https://ru.hexlet.io/courses')
     with open(file_path, 'r', encoding="utf-8") as f:
         html = f.read()
         soup = BeautifulSoup(html)
-        for tag_type, attribute in asset_tags.items():
+        for tag_type, attribute in fixt['asset_tags'].items():
             asset_tags = soup.findAll(tag_type)
             for tag in asset_tags:
                 if tag.has_attr(attribute):
                     root, file_extension = os.path.splitext(tag[attribute])
-                    if file_extension in ASSETS_EXTENSIONS:
+                    if file_extension in fixt['asset_extensions']:
                         assert 'ru-hexlet-io-courses_files' in root
                         assert 'http' not in root
