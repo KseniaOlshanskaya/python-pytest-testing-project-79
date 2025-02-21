@@ -2,7 +2,4 @@ asset_tags:
   img: "src"
   link: "href"
   script: "src"
-  video: "src"
-  audio: "src"
-  source: "srcset"
 asset_extensions: [".png", ".jpeg"]
