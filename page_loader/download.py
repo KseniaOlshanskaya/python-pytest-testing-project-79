@@ -3,6 +3,7 @@ import re
 
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urlparse
 
 ASSET_TAGS = {"img": "src",
               "link": "href",
@@ -11,14 +12,16 @@ ASSET_TAGS = {"img": "src",
               "audio": "src",
               "source": "srcset"}
 
-ASSETS_EXTENSIONS = ['.png', '.jpeg']
+HOST = 'ru.hexlet.io'
 
 
-def modify_name(url, extension=None):
-    file_name = re.sub(r'^[a-zA-Z]+://', '', url)  # remove schema
+def modify_name(url, extension=True):
+    root, file_extension = os.path.splitext(url)
+    file_extension = '.html' if file_extension == '' else file_extension
+    file_name = re.sub(r'^[a-zA-Z]+://', '', root)  # remove schema
     file_name = re.sub(r'[^A-Za-z0-9]', '-', file_name)  # change symbols to -
     if extension:
-        return file_name + extension
+        return file_name + file_extension
     return file_name
 
 
@@ -29,27 +32,28 @@ def download_asset(url, path_to_save):
             with open(path_to_save, 'wb') as f:
                 f.write(response.content)
     except requests.exceptions.RequestException as e:
-        print("Не скачалось")
+        print('Не скачалось: ' + url)
 
 
 def download_assets(soup, assets_dir_name):
     for tag_type, attribute in ASSET_TAGS.items():
         asset_tags = soup.findAll(tag_type)
         for tag in asset_tags:
-            if tag.has_attr(attribute):
-                root, file_extension = os.path.splitext(tag[attribute])
-                if file_extension in ASSETS_EXTENSIONS:
-                    asset_name = modify_name(url=root, extension=file_extension)
+            if tag.has_attr(attribute):  # If tag has href or src attribute
+                parsed_url = urlparse(tag[attribute])
+                if parsed_url.netloc == HOST or parsed_url.netloc == '':  # TODO Change HOST to input URL host
+                    asset_url = tag[attribute] if 'https' in tag[attribute] else ('https://' + HOST + tag[attribute])
+                    asset_name = modify_name(url=asset_url)
                     full_asset_path = os.path.join(assets_dir_name, asset_name)
-                    download_asset(url=tag[attribute], path_to_save=full_asset_path)
+                    download_asset(url=asset_url, path_to_save=full_asset_path)
                     tag[attribute] = full_asset_path
 
 
 def download(url: str, output: str = None):
-    page_name = modify_name(url, '.html')
+    page_name = modify_name(url)
     output_folder = output if output else os.path.dirname(__file__)
     full_file_path = os.path.join(output_folder, page_name)
-    assets_dir_name = os.path.join(output_folder, modify_name(url) + '_files')
+    assets_dir_name = os.path.join(output_folder, modify_name(url=url, extension=False) + '_files')
     if not os.path.exists(assets_dir_name):
         os.mkdir(assets_dir_name)
     page = requests.get(url)
