@@ -1,8 +1,10 @@
 import difflib
-import os
 from urllib.parse import urlparse
 
 import pytest
+import os
+import stat
+
 import yaml
 from bs4 import BeautifulSoup
 
@@ -113,3 +115,13 @@ def test_incorrect_url_type():
 def test_incorrect_output_type():
     with pytest.raises(TypeError):
         download(url='https://ru.hexlet.io/webinars', output=1)
+
+
+# Negative: Permission denied
+def test_no_access_to_folder(tmp_path):
+    temp = str(tmp_path)
+    folder = "admin"
+    path = os.path.join(temp, folder)
+    os.mkdir(path)
+    with pytest.raises(PermissionError):
+        download(url='https://ru.hexlet.io/webinars', output=path)

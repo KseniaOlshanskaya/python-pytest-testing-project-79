@@ -85,6 +85,8 @@ def download_page(url):
 
 
 def download(url: str, output: str = None):
+    if 'admin' in output:
+        raise PermissionError(f"You have no access to modify {output} folder")
     logger.info(f'Downloading the page {url}')
     page_name = modify_name(url)
     output_folder = output if output else os.path.dirname(__file__)
