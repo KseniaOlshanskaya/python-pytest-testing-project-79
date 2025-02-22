@@ -7,7 +7,7 @@ name = "page_loader"
 version = "0.1.5"
 
 [tool.hatch.build.targets.wheel]
-packages = ["hexlet-code"]
+packages = ["page_loader"]
 
 [project.scripts]
 page-loader = "page_loader.scripts.main:main"
