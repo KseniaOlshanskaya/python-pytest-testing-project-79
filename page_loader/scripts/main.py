@@ -1,10 +1,14 @@
 import argparse
 import logging
+import sys
 
 from page_loader.download import download
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setLevel(logging.INFO)
+logger.addHandler(console_handler)
 
 def main():
     logging.basicConfig(filename='page_loader.log', level=logging.INFO)

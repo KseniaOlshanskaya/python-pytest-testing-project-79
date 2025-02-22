@@ -1,12 +1,17 @@
 import logging
 import os
 import re
+import sys
 from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setLevel(logging.INFO)
+logger.addHandler(console_handler)
 
 ASSET_TAGS = {"img": "src",
               "link": "href",
