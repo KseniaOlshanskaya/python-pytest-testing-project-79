@@ -1,10 +1,8 @@
 import difflib
+import os
 from urllib.parse import urlparse
 
 import pytest
-import os
-import stat
-
 import yaml
 from bs4 import BeautifulSoup
 
