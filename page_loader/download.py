@@ -89,13 +89,18 @@ def download(url: str, output: str = None):
     page_name = modify_name(url)
     output_folder = output if output else os.path.dirname(__file__)
     if 'admin' in output_folder:
-        raise PermissionError(f"You have no access to modify {output_folder} folder")
+        error_text = f"You have no access to modify {output_folder} folder"
+        raise PermissionError(error_text)
     logger.info(f'Output folder: {output_folder}')
     full_file_path = os.path.join(output_folder, page_name)
     assets_dir_name = os.path.join(output_folder, modify_name(url=url, extension=False) + '_files')
     logger.info(f'Assets folder: {assets_dir_name}')
     if not os.path.exists(assets_dir_name):
-        os.mkdir(assets_dir_name)
+        try:
+            os.mkdir(assets_dir_name)
+        except (FileNotFoundError, PermissionError) as e:
+            logger.error(e)
+            sys.exit(1)
     page = download_page(url)
     soup = BeautifulSoup(page.text, "html.parser")
     parsed_url = urlparse(url)

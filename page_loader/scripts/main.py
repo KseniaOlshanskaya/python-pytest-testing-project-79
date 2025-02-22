@@ -21,13 +21,17 @@ def main():
     args = parser.parse_args()
     logger.info('page_loader started')
     logger.debug(f'Args from the user: {args}')
-    if args.output:
-        file_path = download(url=args.url, output=args.output)
-    else:
-        file_path = download(url=args.url)
+    try:
+        if args.output:
+            file_path = download(url=args.url, output=args.output)
+        else:
+            file_path = download(url=args.url)
+    except PermissionError as e:
+        logger.error(e)
+        sys.exit(1)
     logger.info(f'page_loader finished. File path: {file_path}')
-    return file_path
-
+    print(f'Path to downloaded page: {file_path}')
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()
