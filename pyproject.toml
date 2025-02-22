@@ -3,11 +3,11 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "page_loader"
+name = "hexlet-code"
 version = "0.1.5"
 
 [tool.hatch.build.targets.wheel]
-packages = ["page_loader"]
+packages = ["hexlet-code"]
 
 [project.scripts]
 page-loader = "page_loader.scripts.main:main"
