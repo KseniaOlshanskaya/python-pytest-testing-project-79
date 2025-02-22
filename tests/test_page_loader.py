@@ -3,24 +3,24 @@ import os
 from urllib.parse import urlparse
 
 import pytest
-from page_loader.download import download
-from bs4 import BeautifulSoup
 import yaml
+from bs4 import BeautifulSoup
+
+from page_loader.download import download
 
 HOST = 'ru.hexlet.io'
 
-def test_file_download(tmp_path):
+
+# Positive: existing url, existing folder
+def test_file_download_positive(tmp_path):
     temp = str(tmp_path)
     file_path = download(url='https://ru.hexlet.io/courses', output=temp)
-    expected_path = os.path.join(temp, 'ru-hexlet-io-courses.html')
+    expected_path = os.path.join(temp, 'ru-hexlet-io-courses-etalon.html')
     assert file_path == expected_path
     assert os.path.exists(expected_path)
 
-def test_output_path_not_exist(tmp_path):
-    unexpected_path = 'файл/'
-    with pytest.raises(FileNotFoundError):
-        download(url='https://ru.hexlet.io/courses', output=unexpected_path)
 
+# Positive: existing url, no output provided
 def test_download_without_output(tmp_path):
     file_path = download(url='https://ru.hexlet.io/courses')
     expected_path = (os.path.join(os.path.dirname(__file__), 'ru-hexlet-io-courses.html')
@@ -29,23 +29,34 @@ def test_download_without_output(tmp_path):
     os.remove(expected_path)
     assert not os.path.exists(expected_path)
 
+
+# Positive: All expected assets exist
 def test_assets_exist(tmp_path):
-    download(url='https://ru.hexlet.io/courses')
-    required_files = {"ru-hexlet-io-courses.html", "ru-hexlet-io-manifest.json"}
-    expected_assets_dir_path = (os.path.join(os.path.dirname(__file__), 'ru-hexlet-io-courses_files')
-                                .replace('tests', 'page_loader'))
+    temp = str(tmp_path)
+    download(url='https://ru.hexlet.io/courses', output=temp)
+    required_files = os.listdir('fixtures/test_all_assets_exist')
+    expected_assets_dir_path = os.path.join(temp, 'ru-hexlet-io-courses_files')
     assert os.path.exists(expected_assets_dir_path)
     for file in required_files:
         file_path = os.path.join(expected_assets_dir_path, file)
         assert os.path.exists(file_path)
 
 
-def test_assets_href_change():
+def test_image_asset_exist(tmp_path):
+    temp = str(tmp_path)
+    download(url='https://en.wikipedia.org/wiki/Robert_II_of_Scotland', output=temp)
+    expected_assets_dir_path = os.path.join(temp, 'en-wikipedia-org-wiki-Robert-II-of-Scotland_files')
+    file_path = os.path.join(expected_assets_dir_path, 'en-wikipedia-org-static-apple-touch-wikipedia.png')
+    assert os.path.exists(file_path)
 
-    with open('tests/fixtures/assets_tags.yaml', 'r') as f:
+
+# Positive: All assets hrefs changed to local paths
+def test_assets_href_change(tmp_path):
+    temp = str(tmp_path)
+    with open('fixtures/test_assets_href_change/assets_tags.yaml', 'r') as f:
         fixt = yaml.load(f, Loader=yaml.SafeLoader)
 
-    file_path = download(url='https://ru.hexlet.io/courses')
+    file_path = download(url='https://ru.hexlet.io/courses', output=temp)
     with open(file_path, 'r', encoding="utf-8") as f:
         html = f.read()
         soup = BeautifulSoup(html, "html.parser")
@@ -60,17 +71,45 @@ def test_assets_href_change():
                             assert 'ru-hexlet-io-courses_files' in root
                             assert 'http' not in root
 
-def test_check_asset_content():
-    download(url='https://ru.hexlet.io/courses')
-    expected_assets_dir_path = (os.path.join(os.path.dirname(__file__), 'ru-hexlet-io-courses_files')
-                                .replace('tests', 'page_loader'))
+
+# Compare assets content with etalon
+def test_check_asset_content(tmp_path):
+    temp = str(tmp_path)
+    download(url='https://ru.hexlet.io/courses', output=temp)
+    expected_assets_dir_path = os.path.join(temp, 'ru-hexlet-io-courses_files')
     existing_files = set(os.listdir(expected_assets_dir_path))
     for file_ in existing_files:
         root, file_extension = os.path.splitext(file_)
         with (open(os.path.join(expected_assets_dir_path, file_), encoding='UTF-8') as actual_file,
-            open(f'tests/fixtures/{root}-etalon{file_extension}', encoding='UTF-8') as etalon_file):
+              open(f'fixtures/test_check_asset_content/{root}-etalon{file_extension}',
+                   encoding='UTF-8') as etalon_file):
             actual_content = actual_file.read()
             etalon_content = etalon_file.read()
             similarity = difflib.SequenceMatcher(None, actual_content, etalon_content).ratio()
             assert similarity >= 0.99, f"Asset {file_} similarity with etalon = {similarity:.2%}. Must be >= 0.99"
 
+
+# Negative: Unreal URL
+def test_unreal_url(tmp_path):
+    temp = str(tmp_path)
+    with pytest.raises(Exception):
+        download(url='https://ru.hexlet.io/lol', output=temp)
+
+
+# Negative: Unreal output folder
+def test_output_path_not_exist():
+    unexpected_path = 'файл/'
+    with pytest.raises(FileNotFoundError):
+        download(url='https://ru.hexlet.io/webinars', output=unexpected_path)
+
+
+# Negative: Incorrect URL type
+def test_incorrect_url_type():
+    with pytest.raises(TypeError):
+        download(url=1)
+
+
+# Negative: Incorrect folder type
+def test_incorrect_output_type():
+    with pytest.raises(TypeError):
+        download(url='https://ru.hexlet.io/webinars', output=1)

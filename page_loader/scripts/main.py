@@ -12,7 +12,6 @@ logger.addHandler(console_handler)
 
 def main():
     logging.basicConfig(filename='page_loader.log', level=logging.INFO)
-    logger.info('page_loader started')
     parser = argparse.ArgumentParser(
         description="Page loader Hexlet"
     )
@@ -20,6 +19,7 @@ def main():
     parser.add_argument('url', help='URL')
 
     args = parser.parse_args()
+    logger.info('page_loader started')
     logger.debug(f'Args from the user: {args}')
     if args.output:
         file_path = download(url=args.url, output=args.output)
