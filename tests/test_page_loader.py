@@ -17,7 +17,7 @@ HOST = 'ru.hexlet.io'
 def test_file_download_positive(tmp_path):
     temp = str(tmp_path)
     file_path = download(url='https://ru.hexlet.io/courses', output=temp)
-    expected_path = os.path.join(temp, 'ru-hexlet-io-courses-etalon.html')
+    expected_path = os.path.join(temp, 'ru-hexlet-io-courses.html')
     assert file_path == expected_path
     assert os.path.exists(expected_path)
 

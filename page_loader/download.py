@@ -85,11 +85,11 @@ def download_page(url):
 
 
 def download(url: str, output: str = None):
-    if 'admin' in output:
-        raise PermissionError(f"You have no access to modify {output} folder")
     logger.info(f'Downloading the page {url}')
     page_name = modify_name(url)
     output_folder = output if output else os.path.dirname(__file__)
+    if 'admin' in output_folder:
+        raise PermissionError(f"You have no access to modify {output_folder} folder")
     logger.info(f'Output folder: {output_folder}')
     full_file_path = os.path.join(output_folder, page_name)
     assets_dir_name = os.path.join(output_folder, modify_name(url=url, extension=False) + '_files')
