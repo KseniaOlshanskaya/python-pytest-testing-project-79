@@ -20,7 +20,7 @@ def main():
         file_path = download(url=args.url, output=args.output)
     else:
         file_path = download(url=args.url)
-    logger.info('page_loader finished')
+    logger.info(f'page_loader finished. File path: {file_path}')
     return file_path
 
 

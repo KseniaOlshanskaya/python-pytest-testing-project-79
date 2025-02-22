@@ -19,7 +19,7 @@ HOST = 'ru.hexlet.io'
 
 
 def modify_name(url, extension=True):
-    logger.info(f'Creating name of the folder/file by url: {url}')
+    logger.info(f'Creating name of the folder/file url: {url}')
 
     root, file_extension = os.path.splitext(url)
     file_extension = '.html' if file_extension == '' else file_extension
@@ -31,7 +31,7 @@ def modify_name(url, extension=True):
 
 
 def download_asset(url, path_to_save):
-    logger.info(f'Downloading asset by url: {url}')
+    logger.info(f'Downloading asset url: {url}')
     try:
         response = requests.get(url)
         if response.ok:
@@ -58,18 +58,18 @@ def download_assets(soup, assets_dir_name):
     logger.info('Assets are downloaded')
 
 def download_page(url):
-    logger.info(f'Downloading page by url: {url}')
+    logger.info(f'Downloading page url: {url}')
     try:
         response = requests.get(url)
         if response.ok:
-            logger.info(f'Server response: {response.ok}')
+            logger.info(f'Server response: {response}')
         return response
     except requests.exceptions.RequestException as e:
         logger.error(f'Cannot reach the page: {url}. Error: {e}')
 
 
 def download(url: str, output: str = None):
-    logger.info(f'Downloading the page by {url}')
+    logger.info(f'Downloading the page {url}')
     page_name = modify_name(url)
     output_folder = output if output else os.path.dirname(__file__)
     logger.info(f'Output folder: {output_folder}')
@@ -85,5 +85,4 @@ def download(url: str, output: str = None):
 
     with open(full_file_path, "w", encoding="utf-8") as file:
         file.write(final_page)
-    logger.info(f'Page was downloaded: {full_file_path}')
     return full_file_path

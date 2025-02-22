@@ -19,7 +19,7 @@ def test_output_path_not_exist(tmp_path):
     with pytest.raises(FileNotFoundError):
         download(url='https://ru.hexlet.io/courses', output=unexpected_path)
 
-def test_download_without_output():
+def test_download_without_output(tmp_path):
     file_path = download(url='https://ru.hexlet.io/courses')
     expected_path = (os.path.join(os.path.dirname(__file__), 'ru-hexlet-io-courses.html')
                      .replace('tests', 'page_loader'))
@@ -27,7 +27,7 @@ def test_download_without_output():
     os.remove(expected_path)
     assert not os.path.exists(expected_path)
 
-def test_assets_exist():
+def test_assets_exist(tmp_path):
     download(url='https://ru.hexlet.io/courses')
     required_files = {"ru-hexlet-io-courses.html", "ru-hexlet-io-manifest.json"}
     expected_assets_dir_path = (os.path.join(os.path.dirname(__file__), 'ru-hexlet-io-courses_files')
@@ -38,7 +38,7 @@ def test_assets_exist():
         assert os.path.exists(file_path)
 
 
-def test_assets_href_change():
+def test_assets_href_change(tmp_path):
 
     with open('fixtures/assets_tags.yaml', 'r') as f:
         fixt = yaml.load(f, Loader=yaml.SafeLoader)
@@ -56,12 +56,11 @@ def test_assets_href_change():
                         assert 'ru-hexlet-io-courses_files' in root
                         assert 'http' not in root
 
-def test_check_asset_content():
+def test_check_asset_content(tmp_path):
     download(url='https://ru.hexlet.io/courses')
     expected_assets_dir_path = (os.path.join(os.path.dirname(__file__), 'ru-hexlet-io-courses_files')
                                 .replace('tests', 'page_loader'))
     existing_files = set(os.listdir(expected_assets_dir_path))
-    print(existing_files)
     for file_ in existing_files:
         root, file_extension = os.path.splitext(file_)
         with (open(os.path.join(expected_assets_dir_path, file_), encoding='UTF-8') as actual_file,
