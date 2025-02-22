@@ -45,7 +45,7 @@ def download_asset(url, path_to_save):
 def download_assets(soup, assets_dir_name):
     logger.info('Downloading all assets')
     for tag_type, attribute in ASSET_TAGS.items():
-        asset_tags = soup.findAll(tag_type)
+        asset_tags = soup.find_all(tag_type)
         for tag in asset_tags:
             if tag.has_attr(attribute):  # If tag has href or src attribute
                 parsed_url = urlparse(tag[attribute])

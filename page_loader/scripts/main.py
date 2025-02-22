@@ -4,6 +4,7 @@ import logging
 from page_loader.download import download
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 def main():
     logging.basicConfig(filename='page_loader.log', level=logging.INFO)
