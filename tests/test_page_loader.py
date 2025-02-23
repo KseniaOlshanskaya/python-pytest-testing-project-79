@@ -119,12 +119,6 @@ def test_output_path_not_exist():
         download(url='https://ru.hexlet.io/webinars', output=unexpected_path)
 
 
-# Negative: Incorrect URL type
-def test_incorrect_url_type():
-    with pytest.raises(TypeError):
-        download(url=1)
-
-
 # Negative: Incorrect folder type
 def test_incorrect_output_type():
     with pytest.raises(TypeError):

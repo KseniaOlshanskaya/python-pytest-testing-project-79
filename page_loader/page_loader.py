@@ -80,7 +80,11 @@ def download_assets(soup, assets_dir_name, host):
     logger.info('Assets are downloaded')
 
 def download_page(url):
-    response = requests.get(url)
+    try:
+        response = requests.get(url)
+    except Exception:
+        logger.info(f'Problems with URL: {url}')
+        sys.exit(1)
     logger.info(f'Server response: {response}')
     if not response.ok:
         raise InvalidURL(f"Request {url} failed: {response.status_code} Reason: {response.reason}")
