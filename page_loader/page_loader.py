@@ -97,7 +97,7 @@ def download(url: str, output: str = None):
         raise PermissionError(error_text)
     logger.info(f'Output folder: {output_folder}')
     full_file_path = os.path.join(output_folder, page_name)
-    assets_dir_name = os.path.join(output_folder, modify_name(url=url, extension=False) + '_files')
+    assets_dir_name = os.path.join(modify_name(url=url, extension=False) + '_files')
     logger.info(f'Assets folder: {assets_dir_name}')
     soup = BeautifulSoup(page.text, "html.parser")
     if not os.path.exists(assets_dir_name):
