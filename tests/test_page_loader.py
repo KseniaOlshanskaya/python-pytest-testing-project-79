@@ -19,6 +19,17 @@ def test_file_download_positive(tmp_path):
     assert file_path == expected_path
     assert os.path.exists(expected_path)
 
+# Positive: Target page is single
+def test_target_page_is_single(tmp_path):
+    temp = str(tmp_path)
+    download(url='https://ru.hexlet.io/courses', output=temp)
+    target_page = 'ru-hexlet-io-courses.html'
+    count = 0
+    for root, dirs, files in os.walk(temp):
+        if target_page in files:
+            count += 1
+    assert count == 1
+
 # Positive: Download 2 pages
 def test_file_download_two_pages(tmp_path):
     temp = str(tmp_path)
