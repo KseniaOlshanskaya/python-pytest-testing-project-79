@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 import pytest
 import yaml
 from bs4 import BeautifulSoup
+from requests.exceptions import MissingSchema
 
 from page_loader.page_loader import download, InvalidURL
 
