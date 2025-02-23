@@ -101,11 +101,7 @@ def download(url: str, output: str = None):
     logger.info(f'Assets folder: {assets_dir_name}')
     soup = BeautifulSoup(page.text, "html.parser")
     if not os.path.exists(assets_dir_name):
-        try:
-            os.mkdir(assets_dir_name)
-        except (FileNotFoundError, PermissionError) as e:
-            logger.error(e)
-            sys.exit(1)
+        os.mkdir(assets_dir_name)
     parsed_url = urlparse(url)
     download_assets(soup=soup, assets_dir_name=assets_dir_name, host=parsed_url.netloc)
     final_page = str(soup.prettify())
