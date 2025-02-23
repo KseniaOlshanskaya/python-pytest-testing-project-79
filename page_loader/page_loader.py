@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(sys.stdout)
+console_handler = logging.StreamHandler(sys.stderr)
 console_handler.setLevel(logging.INFO)
 logger.addHandler(console_handler)
 ASSET_TAGS = {"img": "src",
@@ -89,6 +89,12 @@ def download_page(url):
 
 def download(url: str, output: str = None):
     logger.info(f'Downloading the page {url}')
+    try:
+        page = download_page(url)
+    except InvalidURL as e:
+        logger.error(e)
+        sys.exit(1)
+
     page_name = modify_name(url)
     output_folder = output if output else os.path.dirname(__file__)
     if 'admin' in output_folder:
@@ -98,11 +104,6 @@ def download(url: str, output: str = None):
     full_file_path = os.path.join(output_folder, page_name)
     assets_dir_name = os.path.join(output_folder, modify_name(url=url, extension=False) + '_files')
     logger.info(f'Assets folder: {assets_dir_name}')
-    try:
-        page = download_page(url)
-    except InvalidURL as e:
-        logger.error(e)
-        sys.exit(1)
     soup = BeautifulSoup(page.text, "html.parser")
     if not os.path.exists(assets_dir_name):
         try:

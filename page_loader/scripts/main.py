@@ -4,13 +4,13 @@ import sys
 from page_loader.page_loader import download
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-console_handler = logging.StreamHandler(sys.stdout)
+console_handler = logging.StreamHandler(sys.stderr)
 console_handler.setLevel(logging.INFO)
 logger.addHandler(console_handler)
 
 
 def main():
-    logging.basicConfig(filename='scripts/page_loader.log', level=logging.INFO)
+    logging.basicConfig(filename='page_loader.log', level=logging.INFO)
     parser = argparse.ArgumentParser(
         description="Page loader Hexlet"
     )
