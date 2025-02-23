@@ -89,12 +89,7 @@ def download_page(url):
 
 def download(url: str, output: str = None):
     logger.info(f'Downloading the page {url}')
-    try:
-        page = download_page(url)
-    except InvalidURL as e:
-        logger.error(e)
-        sys.exit(1)
-
+    page = download_page(url)
     page_name = modify_name(url)
     output_folder = output if output else os.path.dirname(__file__)
     if 'admin' in output_folder:
