@@ -10,7 +10,7 @@ version = "0.1.5"
 packages = ["hexlet-code"]
 
 [project.scripts]
-page-loader = "page_loader.scripts.page_loader:main"
+page-loader = "hexlet_code.scripts.page_loader:main"
 
 [dependency-groups]
 dev = [
