@@ -1,11 +1,12 @@
-install:
-	uv sync
-
 build:
-	./build.sh
+	poetry build
 
 package-install:
-	uv tool install dist/hexlet-code.whl
+	pip install --user dist/*.whl
 
-lint:
-	uv run flake8 page_analyzer
+test:
+	poetry run pytest
+
+check:
+	poetry run flake8
+	poetry run mypy hexlet_code/
