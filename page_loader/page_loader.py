@@ -23,6 +23,10 @@ class AssetNotFound(Exception):
     def __init__(self, message="AssetNotFound: Asset could not be downloaded"):
         super().__init__(message)
 
+class InvalidURL(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
 
 def modify_name(url, extension=True):
     logger.info(f'Creating name of the folder/file url: {url}')
@@ -79,7 +83,7 @@ def download_page(url):
     response = requests.get(url)
     logger.info(f'Server response: {response}')
     if not response.ok:
-        raise Exception(f"Request {url} failed: {response.status_code} Reason: {response.reason}")
+        raise InvalidURL(f"Request {url} failed: {response.status_code} Reason: {response.reason}")
     return response
 
 
@@ -96,8 +100,8 @@ def download(url: str, output: str = None):
     logger.info(f'Assets folder: {assets_dir_name}')
     try:
         page = download_page(url)
-    except Exception:
-        logger.error(f'Invalid URL: {url}')
+    except InvalidURL as e:
+        logger.error(e)
         sys.exit(1)
     soup = BeautifulSoup(page.text, "html.parser")
     if not os.path.exists(assets_dir_name):
