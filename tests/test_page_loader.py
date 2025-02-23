@@ -6,7 +6,7 @@ import pytest
 import yaml
 from bs4 import BeautifulSoup
 
-from page_loader.download import download
+from hexlet_code.download import download
 
 HOST = 'ru.hexlet.io'
 

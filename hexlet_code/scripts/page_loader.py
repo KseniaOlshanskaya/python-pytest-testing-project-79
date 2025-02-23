@@ -2,7 +2,7 @@ import argparse
 import logging
 import sys
 
-from page_loader.download import download
+from hexlet_code.download import download
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
