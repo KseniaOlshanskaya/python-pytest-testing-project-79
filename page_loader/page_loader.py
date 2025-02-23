@@ -53,7 +53,7 @@ def download_asset(url, path_to_save):
         with open(path_to_save, 'wb') as f:
             f.write(response.content)
     else:
-        raise Exception(f"Request {url} failed: {response.status_code} Reason: {response.reason}")
+        raise AssetNotFound(f"Request {url} failed: {response.status_code} Reason: {response.reason}")
 
 
 def download_assets(soup, assets_dir_name, host):
@@ -94,14 +94,18 @@ def download(url: str, output: str = None):
     full_file_path = os.path.join(output_folder, page_name)
     assets_dir_name = os.path.join(output_folder, modify_name(url=url, extension=False) + '_files')
     logger.info(f'Assets folder: {assets_dir_name}')
+    try:
+        page = download_page(url)
+    except Exception:
+        logger.error(f'Invalid URL: {url}')
+        sys.exit(1)
+    soup = BeautifulSoup(page.text, "html.parser")
     if not os.path.exists(assets_dir_name):
         try:
             os.mkdir(assets_dir_name)
         except (FileNotFoundError, PermissionError) as e:
             logger.error(e)
             sys.exit(1)
-    page = download_page(url)
-    soup = BeautifulSoup(page.text, "html.parser")
     parsed_url = urlparse(url)
     download_assets(soup=soup, assets_dir_name=assets_dir_name, host=parsed_url.netloc)
     final_page = str(soup.prettify())
