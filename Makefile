@@ -1,12 +1,26 @@
+# Makefile
+
+install:
+	poetry lock ;\
+	poetry install
+
+
 build:
 	poetry build
 
+
 package-install:
-	pip install --user dist/*.whl
+	uv tool install --reinstall --force dist/*.whl
 
-test:
-	poetry run pytest
 
-check:
-	poetry run flake8
-	poetry run mypy hexlet_code/
+lint:
+	poetry run flake8 page_loader ;\
+	poetry run flake8 tests
+
+test-cov:
+	poetry run pytest --cov=page_loader -vv --cov-report xml
+
+test: # запуск pytest
+	poetry run pytest -vv
+
+.PHONY: install build publish package-install lint test test-cov
