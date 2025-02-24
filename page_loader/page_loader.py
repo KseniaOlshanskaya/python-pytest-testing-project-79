@@ -101,8 +101,8 @@ def download(url: str, output: str = None):
     assets_dir_path = os.path.join(output_folder, modify_name(url=url, extension=False) + '_files')
     logger.info(f'Assets folder: {assets_dir_name}')
     soup = BeautifulSoup(page.text, "html.parser")
-    if not os.path.exists(assets_dir_name):
-        os.mkdir(assets_dir_name)
+    if not os.path.exists(assets_dir_path):
+        os.mkdir(assets_dir_path)
     parsed_url = urlparse(url)
     download_assets(soup=soup, assets_dir_name=assets_dir_name, assets_dir_path=assets_dir_path, host=parsed_url.netloc)
     final_page = str(soup.prettify())
