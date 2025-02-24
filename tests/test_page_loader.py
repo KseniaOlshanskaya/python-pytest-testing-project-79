@@ -14,10 +14,20 @@ HOST = 'ru.hexlet.io'
 # Positive: existing url, existing folder
 def test_file_download_positive(tmp_path):
     temp = str(tmp_path)
-    file_path = download(url='https://ru.hexlet.io/courses', output_folder=temp)
+    file_path = download(url='https://ru.hexlet.io/courses', output=temp)
     expected_path = os.path.join(temp, 'ru-hexlet-io-courses.html')
     assert file_path == expected_path
     assert os.path.exists(expected_path)
+
+# Positive: existing url, no output provided
+def test_download_without_output():
+    file_path = download(url='https://ru.hexlet.io/courses')
+    expected_path = (os.path.join(os.path.dirname(__file__), 'ru-hexlet-io-courses.html')
+                     .replace('tests', 'page_loader'))
+    assert file_path == expected_path
+    expected_assets_dir_path = (os.path.join(os.path.dirname(__file__), 'ru-hexlet-io-courses_files')
+                                .replace('tests', 'page_loader'))
+    assert os.path.exists(expected_assets_dir_path)
 
 # Positive: Target page is single
 def test_target_page_is_single(tmp_path):
