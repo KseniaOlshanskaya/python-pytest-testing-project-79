@@ -1,5 +1,6 @@
 import argparse
 import logging
+import os
 import sys
 from page_loader.page_loader import download
 logger = logging.getLogger(__name__)
@@ -20,11 +21,9 @@ def main():
     args = parser.parse_args()
     logger.info('page_loader started')
     logger.debug(f'Args from the user: {args}')
+    output_folder = args.output if args.output else os.path.join(os.path.dirname(__file__))
     try:
-        if args.output:
-            file_path = download(url=args.url, output=args.output)
-        else:
-            file_path = download(url=args.url)
+        file_path = download(url=args.url, output_folder=output_folder)
     except PermissionError as e:
         logger.error(e)
         sys.exit(1)
