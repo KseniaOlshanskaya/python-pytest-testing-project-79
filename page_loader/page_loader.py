@@ -60,7 +60,7 @@ def download_asset(url, path_to_save):
         raise AssetNotFound(f"Request {url} failed: {response.status_code} Reason: {response.reason}")
 
 
-def download_assets(soup, assets_dir_name, host):
+def download_assets(soup, assets_dir_name, assets_dir_path, host):
     logger.info('Downloading all assets')
     for tag_type, attribute in ASSET_TAGS.items():
         asset_tags = soup.find_all(tag_type)
@@ -70,7 +70,7 @@ def download_assets(soup, assets_dir_name, host):
                 if parsed_url.netloc == host or parsed_url.netloc == '' and 'login' not in parsed_url.path:
                     asset_url = tag[attribute] if 'https' in tag[attribute] else ('https://' + host + tag[attribute])
                     asset_name = modify_name(url=asset_url)
-                    full_asset_path = os.path.join(assets_dir_name, asset_name)
+                    full_asset_path = os.path.join(assets_dir_path, asset_name)
                     try:
                         download_asset(url=asset_url, path_to_save=full_asset_path)
                     except AssetNotFound as e:
@@ -97,13 +97,14 @@ def download(url: str, output: str = None):
         raise PermissionError(error_text)
     logger.info(f'Output folder: {output_folder}')
     full_file_path = os.path.join(output_folder, page_name)
-    assets_dir_name = os.path.join(output_folder, modify_name(url=url, extension=False) + '_files')
+    assets_dir_name = modify_name(url=url, extension=False) + '_files'
+    assets_dir_path = os.path.join(output_folder, modify_name(url=url, extension=False) + '_files')
     logger.info(f'Assets folder: {assets_dir_name}')
     soup = BeautifulSoup(page.text, "html.parser")
     if not os.path.exists(assets_dir_name):
         os.mkdir(assets_dir_name)
     parsed_url = urlparse(url)
-    download_assets(soup=soup, assets_dir_name=assets_dir_name, host=parsed_url.netloc)
+    download_assets(soup=soup, assets_dir_name=assets_dir_name, assets_dir_path=assets_dir_path, host=parsed_url.netloc)
     final_page = str(soup.prettify())
 
     with open(full_file_path, "w", encoding="utf-8") as file:
