@@ -70,9 +70,6 @@ def download_assets(soup, assets_dir_name, host):
                 if parsed_url.netloc == host or parsed_url.netloc == '' and 'login' not in parsed_url.path:
                     asset_url = tag[attribute] if 'https' in tag[attribute] else ('https://' + host + tag[attribute])
                     asset_name = modify_name(url=asset_url)
-                    root, _ = os.path.splitext(asset_name)
-                    if root in assets_dir_name:
-                        continue
                     full_asset_path = os.path.join(assets_dir_name, asset_name)
                     try:
                         download_asset(url=asset_url, path_to_save=full_asset_path)
