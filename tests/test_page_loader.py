@@ -48,7 +48,7 @@ def test_file_download_two_pages(tmp_path):
 
 
 # Positive: existing url, no output provided
-def test_download_without_output(tmp_path):
+def test_download_without_output():
     file_path = download(url='https://ru.hexlet.io/courses')
     expected_path = (os.path.join(os.path.dirname(__file__), 'ru-hexlet-io-courses.html')
                      .replace('tests', 'page_loader'))
