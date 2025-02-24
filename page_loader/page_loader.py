@@ -76,7 +76,7 @@ def download_assets(soup, assets_dir_name, host):
                     except AssetNotFound as e:
                         logger.info(e)
                         continue
-                    tag[attribute] = full_asset_path
+                    tag[attribute] = os.path.join(assets_dir_name, asset_name)
     logger.info('Assets are downloaded')
 
 def download_page(url):
@@ -87,10 +87,11 @@ def download_page(url):
     return response
 
 
-def download(url: str, output_folder: str = None):
+def download(url: str, output: str = None):
     logger.info(f'Downloading the page {url}')
     page = download_page(url)
     page_name = modify_name(url)
+    output_folder = output if output else os.path.join(os.path.dirname(__file__))
     if 'admin' in output_folder:
         error_text = f"You have no access to modify {output_folder} folder"
         raise PermissionError(error_text)
