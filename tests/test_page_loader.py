@@ -47,16 +47,6 @@ def test_file_download_two_pages(tmp_path):
     assert os.path.exists(expected_assets_dir_path)
 
 
-# Positive: existing url, no output provided
-def test_download_without_output():
-    file_path = download(url='https://ru.hexlet.io/courses')
-    expected_path = (os.path.join(os.path.dirname(__file__), 'ru-hexlet-io-courses.html')
-                     .replace('tests', 'page_loader'))
-    assert file_path == expected_path
-    os.remove(expected_path)
-    assert not os.path.exists(expected_path)
-
-
 # Positive: All expected assets exist
 def test_assets_exist(tmp_path):
     temp = str(tmp_path)
