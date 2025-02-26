@@ -52,13 +52,17 @@ def download_asset(url, path_to_save):
     if re.search(r'[?:*"<>\|]', os.path.basename(path_to_save)):
         logger.info(f'Asset cannot be downloaded as its name consists of unacceptable symbols')
         return
-    response = requests.get(url)
-    logger.info(f'Server response: {response}')
-    if response.ok:
-        with open(path_to_save, 'wb') as f:
-            f.write(response.content)
-    else:
-        raise AssetNotFound(f"Request {url} failed: {response.status_code} Reason: {response.reason}")
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+        logger.info(f'Server response: {response}')
+        if response.ok:
+            with open(path_to_save, 'wb') as f:
+                f.write(response.content)
+    except requests.exceptions.RequestException as e:
+        logger.info(f'Asset cannot be downloaded due to {e}')
+
+
 
 
 def download_assets(soup, assets_dir_name, assets_dir_path, host):
