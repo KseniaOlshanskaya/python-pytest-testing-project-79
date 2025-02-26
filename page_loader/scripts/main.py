@@ -31,9 +31,4 @@ def main():
 
 
 if __name__ == "__main__":
-    try:
-        exit_code = main()
-    except Exception as e:
-        print(f"During run the following exception occurred {e}")
-        sys.exit(1)
-    sys.exit(exit_code)
+    main()
