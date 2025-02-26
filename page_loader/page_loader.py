@@ -109,7 +109,6 @@ def download(url: str, output: str = None):
                         host=parsed_url.netloc)
     except Exception as e:
         logger.error(e)
-        raise Exception()
 
     final_page = str(soup.prettify())
     with open(target_page_path, "w", encoding="utf-8") as file:
