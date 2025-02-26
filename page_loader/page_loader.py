@@ -72,11 +72,7 @@ def download_assets(soup, assets_dir_name, assets_dir_path, host):
                     asset_url = tag[attribute] if 'https' in tag[attribute] else ('https://' + host + tag[attribute])
                     asset_name = modify_name(url=asset_url)
                     full_asset_path = os.path.join(assets_dir_path, asset_name)
-                    try:
-                        download_asset(url=asset_url, path_to_save=full_asset_path)
-                    except (AssetNotFound, HTTPSConnectionPool) as e:
-                        logger.info(e)
-                        raise Exception()
+                    download_asset(url=asset_url, path_to_save=full_asset_path)
                     tag[attribute] = os.path.join(assets_dir_name, asset_name)
     logger.info('Assets are downloaded')
 
