@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
+from urllib3 import HTTPSConnectionPool
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -73,7 +74,7 @@ def download_assets(soup, assets_dir_name, assets_dir_path, host):
                     full_asset_path = os.path.join(assets_dir_path, asset_name)
                     try:
                         download_asset(url=asset_url, path_to_save=full_asset_path)
-                    except AssetNotFound as e:
+                    except (AssetNotFound, HTTPSConnectionPool) as e:
                         logger.info(e)
                         continue
                     tag[attribute] = os.path.join(assets_dir_name, asset_name)
