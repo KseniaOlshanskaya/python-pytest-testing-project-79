@@ -76,7 +76,7 @@ def download_assets(soup, assets_dir_name, assets_dir_path, host):
                         download_asset(url=asset_url, path_to_save=full_asset_path)
                     except (AssetNotFound, HTTPSConnectionPool) as e:
                         logger.info(e)
-                        continue
+                        raise Exception()
                     tag[attribute] = os.path.join(assets_dir_name, asset_name)
     logger.info('Assets are downloaded')
 
@@ -109,7 +109,7 @@ def download(url: str, output: str = None):
                         host=parsed_url.netloc)
     except Exception as e:
         logger.error(e)
-        sys.exit(1)
+        raise Exception()
 
     final_page = str(soup.prettify())
     with open(target_page_path, "w", encoding="utf-8") as file:
