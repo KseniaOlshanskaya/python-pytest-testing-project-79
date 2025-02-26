@@ -27,8 +27,13 @@ def main():
 
     logger.info(f'page_loader finished. File path: {file_path}')
     print(f'Path to downloaded page: {file_path}')
-    sys.exit(0)
+    return file_path
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        exit_code = main()
+    except Exception as e:
+        print(f"During run the following exception occurred {e}")
+        sys.exit(1)
+    sys.exit(exit_code)

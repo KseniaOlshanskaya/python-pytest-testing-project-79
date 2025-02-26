@@ -23,13 +23,13 @@ class AssetNotFound(Exception):
     def __init__(self, message="AssetNotFound: Asset could not be downloaded"):
         super().__init__(message)
 
-class InvalidURL(Exception):
+class RequestInvalidStatus(Exception):
     def __init__(self, message):
         super().__init__(message)
 
 
 def modify_name(url, extension=True):
-    logger.info(f'Creating name of the folder/file url: {url}')
+    logger.info(f'Creating name local name for: {url}')
 
     root, file_extension = os.path.splitext(url)
     file_extension = '.html' if file_extension == '' else file_extension
@@ -83,30 +83,38 @@ def download_page(url):
     response = requests.get(url)
     logger.info(f'Server response: {response}')
     if not response.ok:
-        raise InvalidURL(f"Request {url} failed: {response.status_code} Reason: {response.reason}")
+        raise RequestInvalidStatus(f"Request {url} failed: {response.status_code} Reason: {response.reason}")
     return response
 
 
 def download(url: str, output: str = None):
     logger.info(f'Downloading the page {url}')
-    page = download_page(url)
+    try:
+        page = download_page(url)
+    except Exception as e:
+        logger.error(e)
+        sys.exit(1)
     page_name = modify_name(url)
     output_folder = output if output else os.path.join(os.path.dirname(__file__))
-    if 'admin' in output_folder:
-        error_text = f"You have no access to modify {output_folder} folder"
-        raise PermissionError(error_text)
     logger.info(f'Output folder: {output_folder}')
-    full_file_path = os.path.join(output_folder, page_name)
+    target_page_path = os.path.join(output_folder, page_name)
     assets_dir_name = modify_name(url=url, extension=False) + '_files'
-    assets_dir_path = os.path.join(output_folder, modify_name(url=url, extension=False) + '_files')
+    assets_dir_path = os.path.join(output_folder, assets_dir_name)
     logger.info(f'Assets folder: {assets_dir_name}')
     soup = BeautifulSoup(page.text, "html.parser")
     if not os.path.exists(assets_dir_path):
         os.mkdir(assets_dir_path)
     parsed_url = urlparse(url)
-    download_assets(soup=soup, assets_dir_name=assets_dir_name, assets_dir_path=assets_dir_path, host=parsed_url.netloc)
-    final_page = str(soup.prettify())
+    try:
+        download_assets(soup=soup,
+                        assets_dir_name=assets_dir_name,
+                        assets_dir_path=assets_dir_path,
+                        host=parsed_url.netloc)
+    except Exception as e:
+        logger.error(e)
+        sys.exit(1)
 
-    with open(full_file_path, "w", encoding="utf-8") as file:
+    final_page = str(soup.prettify())
+    with open(target_page_path, "w", encoding="utf-8") as file:
         file.write(final_page)
-    return full_file_path
+    return target_page_path

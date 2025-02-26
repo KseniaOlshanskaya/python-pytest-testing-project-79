@@ -6,7 +6,7 @@ import pytest
 import yaml
 from bs4 import BeautifulSoup
 
-from page_loader.page_loader import download, InvalidURL
+from page_loader.page_loader import download, RequestInvalidStatus
 
 HOST = 'ru.hexlet.io'
 
@@ -119,7 +119,7 @@ def test_check_asset_content(tmp_path):
 # Negative: Unreal URL
 def test_unreal_url(tmp_path):
     temp = str(tmp_path)
-    with pytest.raises(InvalidURL):
+    with pytest.raises(RequestInvalidStatus):
         download(url='https://ru.hexlet.io/lol', output=temp)
 
 
