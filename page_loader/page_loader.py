@@ -76,16 +76,23 @@ def download_assets(soup, assets_dir_name, assets_dir_path, host):
                     asset_url = tag[attribute] if 'https' in tag[attribute] else ('https://' + host + tag[attribute])
                     asset_name = modify_name(url=asset_url)
                     full_asset_path = os.path.join(assets_dir_path, asset_name)
-                    download_asset(url=asset_url, path_to_save=full_asset_path)
-                    tag[attribute] = os.path.join(assets_dir_name, asset_name)
+                    try:
+                        download_asset(url=asset_url, path_to_save=full_asset_path)
+                        tag[attribute] = os.path.join(assets_dir_name, asset_name)
+                    except requests.exceptions.RequestException as e:
+                        logger.info(f'Asset cannot be downloaded due to {e}')
     logger.info('Assets are downloaded')
 
 def download_page(url):
-    response = requests.get(url)
-    logger.info(f'Server response: {response}')
-    if not response.ok:
-        raise RequestInvalidStatus(f"Request {url} failed: {response.status_code} Reason: {response.reason}")
-    return response
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+        logger.info(f'Server response: {response}')
+        if response.ok:
+            return response
+    except requests.exceptions.RequestException as e:
+        logger.info(f'Target page cannot be downloaded due to {e}')
+        sys.exit(1)
 
 
 def download(url: str, output: str = None):
