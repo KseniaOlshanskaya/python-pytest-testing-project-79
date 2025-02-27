@@ -35,3 +35,4 @@ if __name__ == "__main__":
         main()
     except Exception as e:
         logger.error(e)
+        sys.exit(1)
