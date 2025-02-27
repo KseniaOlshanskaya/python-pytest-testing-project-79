@@ -96,7 +96,6 @@ def download_page(url):
 def download(url: str, output: str = None):
     logger.info(f'Downloading the page {url}')
     page = download_page(url)
-
     page_name = modify_name(url)
     output_folder = output if output else os.path.join(os.path.dirname(__file__))
     logger.info(f'Output folder: {output_folder}')
