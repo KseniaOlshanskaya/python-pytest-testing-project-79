@@ -90,6 +90,7 @@ def download_page(url):
             return response
     except (ConnectionError, Timeout, RequestException) as e:
         logger.error(f'Target page cannot be downloaded due to {e}')
+        sys.exit(1)
 
 
 def download(url: str, output: str = None):
