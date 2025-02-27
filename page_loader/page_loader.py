@@ -90,12 +90,15 @@ def download_page(url):
             return response
     except (ConnectionError, Timeout, RequestException) as e:
         logger.error(f'Target page cannot be downloaded due to {e}')
-        sys.exit(1)
+        raise Exception()
 
 
 def download(url: str, output: str = None):
     logger.info(f'Downloading the page {url}')
-    page = download_page(url)
+    try:
+        page = download_page(url)
+    except Exception:
+        sys.exit(1)
     page_name = modify_name(url)
     output_folder = output if output else os.path.join(os.path.dirname(__file__))
     logger.info(f'Output folder: {output_folder}')
