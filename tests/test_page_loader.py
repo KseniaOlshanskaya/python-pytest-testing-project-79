@@ -1,8 +1,6 @@
 import difflib
-import os
 from urllib.parse import urlparse
 
-import pytest
 import yaml
 from bs4 import BeautifulSoup
 
@@ -144,3 +142,63 @@ def test_no_access_to_folder(tmp_path):
     os.mkdir(path)
     with pytest.raises(PermissionError):
         download(url='https://ru.hexlet.io/webinars', output=path)
+
+
+import os
+import requests
+import pytest
+from unittest import mock
+
+
+def test_download_404(monkeypatch, capsys, tmp_path):
+    def fake_requests_get_404(url, timeout):
+        fake_response = mock.Mock()
+        fake_response.status_code = 404
+        fake_response.text = "Not Found"
+        return fake_response
+    # Заменяем requests.get на фейковую функцию, возвращающую 404
+    monkeypatch.setattr(requests, "get", fake_requests_get_404)
+
+    # Используем временную папку для output_folder
+    output_folder = str(tmp_path)
+    download("http://example.com", output_folder)
+
+    captured = capsys.readouterr().out
+    assert "Ошибка: получен статус 404" in captured
+
+
+def test_download_network_exception(monkeypatch, capsys, tmp_path):
+    def fake_requests_get_exception(url, timeout):
+        raise requests.exceptions.RequestException("Network error")
+    # Подменяем requests.get, чтобы он выбрасывал исключение
+    monkeypatch.setattr(requests, "get", fake_requests_get_exception)
+
+    output_folder = str(tmp_path)
+    download("http://example.com", output_folder)
+
+    captured = capsys.readouterr().out
+    assert "Ошибка при загрузке" in captured
+
+
+def test_download_success(monkeypatch, tmp_path):
+    def fake_requests_get_success(url, timeout):
+        # Фейковый объект ответа с кодом 200 и текстом страницы
+        fake_response = mock.Mock()
+        fake_response.status_code = 200
+        fake_response.text = "<html><body>Hello World</body></html>"
+        return fake_response
+    # Подменяем requests.get на функцию, возвращающую успешный ответ
+    monkeypatch.setattr(requests, "get", fake_requests_get_success)
+
+    output_folder = str(tmp_path)
+    download("http://example.com", output_folder)
+
+    # Допустим, что функция сохраняет страницу в файл с именем, зависящим от URL
+    # Например: "example.com.html"
+    expected_filename = os.path.join(output_folder, "example.com.html")
+    assert os.path.exists(expected_filename)
+
+    # Проверяем, что содержимое файла соответствует fake-ответу
+    with open(expected_filename, "r", encoding="utf-8") as f:
+        content = f.read()
+    assert "Hello World" in content

@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
-from urllib3 import HTTPSConnectionPool
+from requests import Timeout, RequestException, ConnectionError
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -59,10 +59,8 @@ def download_asset(url, path_to_save):
         if response.ok:
             with open(path_to_save, 'wb') as f:
                 f.write(response.content)
-    except requests.exceptions.RequestException as e:
+    except (ConnectionError, Timeout, RequestException) as e:
         logger.info(f'Asset cannot be downloaded due to {e}')
-
-
 
 
 def download_assets(soup, assets_dir_name, assets_dir_path, host):
@@ -90,9 +88,8 @@ def download_page(url):
         logger.info(f'Server response: {response}')
         if response.ok:
             return response
-    except requests.exceptions.RequestException as e:
-        logger.info(f'Target page cannot be downloaded due to {e}')
-        sys.exit(1)
+    except (ConnectionError, Timeout, RequestException) as e:
+        logger.error(f'Target page cannot be downloaded due to {e}')
 
 
 def download(url: str, output: str = None):
