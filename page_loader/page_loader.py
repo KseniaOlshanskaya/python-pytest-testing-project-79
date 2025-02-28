@@ -65,15 +65,15 @@ def download_asset(url, path_to_save):
         logger.info(f'Asset cannot be downloaded due to {e}')
 
 
-def download_assets(soup, assets_dir_name, assets_dir_path, host):
+def download_assets(soup, assets_dir_name, assets_dir_path, host, scheme):
     logger.info('Downloading assets...')
     for tag_type, attribute in ASSET_TAGS.items():
         asset_tags = soup.find_all(tag_type)
         for tag in asset_tags:
             if tag.has_attr(attribute):  # If tag has href or src attribute
                 parsed_url = urlparse(tag[attribute])
-                if parsed_url.netloc == host or parsed_url.netloc == '' and 'login' not in parsed_url.path:
-                    asset_url = tag[attribute] if 'https' in tag[attribute] else ('https://' + host + tag[attribute])
+                if parsed_url.netloc == host or parsed_url.netloc == '':
+                    asset_url = tag[attribute] if scheme in tag[attribute] else (scheme + host + tag[attribute])
                     asset_name = modify_name(url=asset_url)
                     full_asset_path = os.path.join(assets_dir_path, asset_name)
                     download_asset(url=asset_url, path_to_save=full_asset_path)
@@ -114,7 +114,8 @@ def download(url: str, output: str = None):
     download_assets(soup=soup,
                     assets_dir_name=assets_dir_name,
                     assets_dir_path=assets_dir_path,
-                    host=parsed_url.netloc)
+                    host=parsed_url.netloc,
+                    scheme=parsed_url.scheme)
 
     final_page = str(soup.prettify())
     with open(target_page_path, "w", encoding="utf-8") as file:
