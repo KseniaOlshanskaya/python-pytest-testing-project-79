@@ -61,10 +61,11 @@ def download_asset(url, path_to_save):
                 f.write(response.content)
     except (ConnectionError, Timeout, RequestException) as e:
         logger.info(f'Asset cannot be downloaded due to {e}')
+        raise Exception()
 
 
 def download_assets(soup, assets_dir_name, assets_dir_path, host):
-    logger.info('Downloading all assets')
+    logger.info('Downloading assets...')
     for tag_type, attribute in ASSET_TAGS.items():
         asset_tags = soup.find_all(tag_type)
         for tag in asset_tags:
@@ -74,13 +75,9 @@ def download_assets(soup, assets_dir_name, assets_dir_path, host):
                     asset_url = tag[attribute] if 'https' in tag[attribute] else ('https://' + host + tag[attribute])
                     asset_name = modify_name(url=asset_url)
                     full_asset_path = os.path.join(assets_dir_path, asset_name)
-                    try:
-                        download_asset(url=asset_url, path_to_save=full_asset_path)
-                        tag[attribute] = os.path.join(assets_dir_name, asset_name)
-                    except (ConnectionError, Timeout, RequestException) as e:
-                        raise Exception()
+                    download_asset(url=asset_url, path_to_save=full_asset_path)
+                    tag[attribute] = os.path.join(assets_dir_name, asset_name)
 
-    logger.info('Assets are downloaded')
 
 def download_page(url):
     try:
@@ -108,13 +105,11 @@ def download(url: str, output: str = None):
     if not os.path.exists(assets_dir_path):
         os.mkdir(assets_dir_path)
     parsed_url = urlparse(url)
-    try:
-        download_assets(soup=soup,
-                        assets_dir_name=assets_dir_name,
-                        assets_dir_path=assets_dir_path,
-                        host=parsed_url.netloc)
-    except Exception as e:
-        logger.error(e)
+
+    download_assets(soup=soup,
+                    assets_dir_name=assets_dir_name,
+                    assets_dir_path=assets_dir_path,
+                    host=parsed_url.netloc)
 
     final_page = str(soup.prettify())
     with open(target_page_path, "w", encoding="utf-8") as file:
