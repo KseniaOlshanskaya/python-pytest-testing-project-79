@@ -20,16 +20,15 @@ def main():
     args = parser.parse_args()
     logger.info('page_loader started')
     logger.debug(f'Args from the user: {args}')
-    try:
-        if args.output:
-            file_path = download(url=args.url, output=args.output)
-        else:
-            file_path = download(url=args.url)
-        logger.info(f'page_loader finished. File path: {file_path}')
-        print(f'Path to downloaded page: {file_path}')
-        return file_path
-    except Exception as e:
-        logger.info(f'Page cannot be downloaded dut to error occurred: {e}')
+
+    if args.output:
+        file_path = download(url=args.url, output=args.output)
+    else:
+        file_path = download(url=args.url)
+    logger.info(f'page_loader finished. File path: {file_path}')
+    print(f'Path to downloaded page: {file_path}')
+    return file_path
+
 
 
 if __name__ == "__main__":

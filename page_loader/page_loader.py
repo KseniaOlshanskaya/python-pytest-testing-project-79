@@ -7,6 +7,8 @@ from urllib.parse import urlparse
 import requests
 from bs4 import BeautifulSoup
 from requests import Timeout, RequestException, ConnectionError
+from requests.exceptions import MissingSchema, InvalidURL
+from urllib3.exceptions import NameResolutionError
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -86,13 +88,17 @@ def download_page(url):
         logger.info(f'Server response: {response}')
         if response.ok:
             return response
-    except (ConnectionError, Timeout, RequestException) as e:
+    except (ConnectionError, Timeout, RequestException, MissingSchema, InvalidURL, NameResolutionError) as e:
         logger.error(f'Target page cannot be downloaded due to {e}')
         raise Exception()
 
+def check_target_page_schema(url):
+    parsed_url = urlparse(url)
+    print(parsed_url)
 
 def download(url: str, output: str = None):
     logger.info(f'Downloading the page {url}')
+    check_target_page_schema(url)
     page = download_page(url)
     page_name = modify_name(url)
     output_folder = output if output else os.path.join(os.path.dirname(__file__))
