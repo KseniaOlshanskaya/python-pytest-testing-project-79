@@ -29,7 +29,8 @@ def main():
     print(f'Path to downloaded page: {file_path}')
     return file_path
 
-
-
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        logger.fatal(msg=f"Some error occurred during run: {e}")
