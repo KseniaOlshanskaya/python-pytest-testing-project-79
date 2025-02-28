@@ -61,7 +61,7 @@ def download_asset(url, path_to_save):
         if response.ok:
             with open(path_to_save, 'wb') as f:
                 f.write(response.content)
-    except (ConnectionError, Timeout, RequestException) as e:
+    except Exception as e:
         logger.info(f'Asset cannot be downloaded due to {e}')
         raise Exception()
 
@@ -88,7 +88,7 @@ def download_page(url):
         logger.info(f'Server response: {response}')
         if response.ok:
             return response
-    except (ConnectionError, Timeout, RequestException, MissingSchema, InvalidURL, NameResolutionError) as e:
+    except Exception as e:
         logger.error(f'Target page cannot be downloaded due to {e}')
         raise Exception()
 
