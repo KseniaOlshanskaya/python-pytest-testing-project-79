@@ -63,7 +63,6 @@ def download_asset(url, path_to_save):
                 f.write(response.content)
     except Exception as e:
         logger.info(f'Asset cannot be downloaded due to {e}')
-        raise Exception()
 
 
 def download_assets(soup, assets_dir_name, assets_dir_path, host):
