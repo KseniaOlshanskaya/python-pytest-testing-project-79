@@ -73,7 +73,7 @@ def download_assets(soup, assets_dir_name, assets_dir_path, host, scheme):
             if tag.has_attr(attribute):  # If tag has href or src attribute
                 parsed_url = urlparse(tag[attribute])
                 if parsed_url.netloc == host or parsed_url.netloc == '':
-                    asset_url = tag[attribute] if scheme in tag[attribute] else (scheme + host + tag[attribute])
+                    asset_url = tag[attribute] if scheme in tag[attribute] else (scheme + '://' + host + tag[attribute])
                     asset_name = modify_name(url=asset_url)
                     full_asset_path = os.path.join(assets_dir_path, asset_name)
                     download_asset(url=asset_url, path_to_save=full_asset_path)
