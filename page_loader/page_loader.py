@@ -77,8 +77,9 @@ def download_assets(soup, assets_dir_name, assets_dir_path, host):
                     try:
                         download_asset(url=asset_url, path_to_save=full_asset_path)
                         tag[attribute] = os.path.join(assets_dir_name, asset_name)
-                    except requests.exceptions.RequestException as e:
-                        logger.info(f'Asset cannot be downloaded due to {e}')
+                    except (ConnectionError, Timeout, RequestException) as e:
+                        raise Exception()
+
     logger.info('Assets are downloaded')
 
 def download_page(url):
@@ -90,9 +91,7 @@ def download_page(url):
             return response
     except (ConnectionError, Timeout, RequestException) as e:
         logger.error(f'Target page cannot be downloaded due to {e}')
-        sys.exit(1)
-        #raise Exception()
-
+        raise Exception()
 
 
 def download(url: str, output: str = None):
