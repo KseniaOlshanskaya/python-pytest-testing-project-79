@@ -147,7 +147,8 @@ def test_no_access_to_folder(tmp_path):
         download(url='https://ru.hexlet.io/webinars', output=path)
 
 
-def test_local_html_without_requests_get(monkeypatch):
+def test_local_html_without_requests_get(monkeypatch, tmp_path):
+    temp = str(tmp_path)
     def fake_get(url):
         class FakeResponse:
             def __init__(self, text):
@@ -161,5 +162,5 @@ def test_local_html_without_requests_get(monkeypatch):
         return FakeResponse(response)
 
     monkeypatch.setattr(requests, "get", fake_get)
-    download(url='http://localhost/blog/about')
+    download(url='http://localhost/blog/about', output=temp)
 
