@@ -62,6 +62,7 @@ def download_asset(url, path_to_save):
                 f.write(response.content)
     except Exception as e:
         logger.info(f'Asset cannot be downloaded due to {e}')
+        raise Exception from e
 
 
 def download_assets(soup, assets_dir_name, assets_dir_path, host, scheme):
@@ -87,7 +88,7 @@ def download_page(url):
             return response
     except Exception as e:
         logger.error(f'Target page cannot be downloaded due to {e}')
-        raise Exception()
+        raise Exception from e
 
 def check_target_page_schema(url):
     parsed_url = urlparse(url)
