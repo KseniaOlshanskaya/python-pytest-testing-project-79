@@ -48,15 +48,14 @@ def modify_name(url, extension=True):
 
 def download_asset(url, path_to_save):
     logger.info(f'Downloading asset... {path_to_save}')
-    if len(os.path.basename(path_to_save)) > 260: # Windows limit
+    """if len(os.path.basename(path_to_save)) > 260: # Windows limit
         logger.info(f'Asset cannot be downloaded as its name length > 260')
         return
     if re.search(r'[?:*"<>\|]', os.path.basename(path_to_save)):
         logger.info(f'Asset cannot be downloaded as its name consists of unacceptable symbols')
-        return
+        return"""
     try:
-        response = requests.get(url, timeout=5)
-        response.raise_for_status()
+        response = requests.get(url)
         logger.info(f'Server response: {response}')
         if response.ok:
             with open(path_to_save, 'wb') as f:
@@ -82,8 +81,7 @@ def download_assets(soup, assets_dir_name, assets_dir_path, host, scheme):
 
 def download_page(url):
     try:
-        response = requests.get(url, timeout=5)
-        response.raise_for_status()
+        response = requests.get(url)
         logger.info(f'Server response: {response}')
         if response.ok:
             return response
