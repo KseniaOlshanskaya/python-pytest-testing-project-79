@@ -78,6 +78,8 @@ def download_assets(soup, assets_dir_name, assets_dir_path, host, scheme):
                     full_asset_path = os.path.join(assets_dir_path, asset_name)
                     download_asset(url=asset_url, path_to_save=full_asset_path)
                     tag[attribute] = os.path.join(assets_dir_name, asset_name)
+                    logger.info(
+                        f'Asset downloaded correctly in: {full_asset_path}. Exists: {os.path.exists(full_asset_path)}')
 
 
 def download_page(url):
