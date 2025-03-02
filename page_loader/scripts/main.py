@@ -31,6 +31,7 @@ def main():
 
 if __name__ == "__main__":
     try:
-        main()
+        target_page = main()
     except Exception as e:
-        logger.fatal(msg=f"Some error occurred during run: {e}")
+        print(f"Что-то случилось c {target_page}")
+        logger.info(msg=f"Some error occurred during run: {e}")
