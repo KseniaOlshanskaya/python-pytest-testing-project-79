@@ -97,28 +97,31 @@ def check_target_page_schema(url):
     print(parsed_url)
 
 def download(url: str, output: str = None):
-    logger.info(f'Downloading the page {url}')
-    check_target_page_schema(url)
-    page = download_page(url)
-    page_name = modify_name(url)
-    output_folder = output if output else os.path.join(os.path.dirname(__file__))
-    logger.info(f'Output folder: {output_folder}')
-    target_page_path = os.path.join(output_folder, page_name)
-    assets_dir_name = modify_name(url=url, extension=False) + '_files'
-    assets_dir_path = os.path.join(output_folder, assets_dir_name)
-    logger.info(f'Assets folder: {assets_dir_name}')
-    soup = BeautifulSoup(page.text, "html.parser")
-    if not os.path.exists(assets_dir_path):
-        os.mkdir(assets_dir_path)
-    parsed_url = urlparse(url)
+    try:
+        logger.info(f'Downloading the page {url}')
+        check_target_page_schema(url)
+        page = download_page(url)
+        page_name = modify_name(url)
+        output_folder = output if output else os.path.join(os.path.dirname(__file__))
+        logger.info(f'Output folder: {output_folder}')
+        target_page_path = os.path.join(output_folder, page_name)
+        assets_dir_name = modify_name(url=url, extension=False) + '_files'
+        assets_dir_path = os.path.join(output_folder, assets_dir_name)
+        logger.info(f'Assets folder: {assets_dir_name}')
+        soup = BeautifulSoup(page.text, "html.parser")
+        if not os.path.exists(assets_dir_path):
+            os.mkdir(assets_dir_path)
+        parsed_url = urlparse(url)
 
-    download_assets(soup=soup,
-                    assets_dir_name=assets_dir_name,
-                    assets_dir_path=assets_dir_path,
-                    host=parsed_url.netloc,
-                    scheme=parsed_url.scheme)
+        download_assets(soup=soup,
+                        assets_dir_name=assets_dir_name,
+                        assets_dir_path=assets_dir_path,
+                        host=parsed_url.netloc,
+                        scheme=parsed_url.scheme)
 
-    final_page = str(soup.prettify())
-    with open(target_page_path, "w", encoding="utf-8") as file:
-        file.write(final_page)
-    return target_page_path
+        final_page = str(soup.prettify())
+        with open(target_page_path, "w", encoding="utf-8") as file:
+            file.write(final_page)
+        return target_page_path
+    except Exception as e:
+        logger.info(f"Что-то случилось плохое {e}")
