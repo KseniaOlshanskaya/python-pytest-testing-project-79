@@ -31,6 +31,7 @@ def main():
     except Exception as e:
         logger.info(msg=f"Some error occurred during run: {e}")
         print(f"Ошибка: {e}", file=sys.stderr)
+        raise Exception() from e
 
 if __name__ == "__main__":
     try:
