@@ -27,7 +27,6 @@ def main():
             file_path = download(url=args.url)
         logger.info(f'page_loader finished. File path: {file_path}')
         print(f'Path to downloaded page: {file_path}')
-        return file_path
     except Exception as e:
         logger.info(msg=f"Some error occurred during run: {e}")
         print(f"Ошибка: {e}", file=sys.stderr)
