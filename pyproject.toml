@@ -36,7 +36,6 @@ pytest-asyncio = "^0.18.3"
 bs4 = "^0.0.1"
 pook = "^1.0.2"
 python = "^3.8"
-PyYAML = "^6.0"
 
 [build-system]
 requires = ["hatchling"]

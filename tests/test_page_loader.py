@@ -4,7 +4,6 @@ from urllib.parse import urlparse
 
 import pytest
 import requests
-import yaml
 from bs4 import BeautifulSoup
 
 from page_loader.page_loader import download, RequestInvalidStatus
@@ -81,21 +80,23 @@ def test_image_asset_exist(tmp_path):
 # Positive: All assets hrefs changed to local paths
 def test_assets_href_change(tmp_path):
     temp = str(tmp_path)
-    with open('fixtures/test_assets_href_change/assets_tags.yaml', 'r') as f:
-        fixt = yaml.load(f, Loader=yaml.SafeLoader)
+    tags = {"img": "src",
+                  "link": "href",
+                  "script": "src"}
+    extensions = [".png", ".jpeg"]
 
     file_path = download(url='https://ru.hexlet.io/courses', output=temp)
     with open(file_path, 'r', encoding="utf-8") as f:
         html = f.read()
         soup = BeautifulSoup(html, "html.parser")
-        for tag_type, attribute in fixt['asset_tags'].items():
+        for tag_type, attribute in tags.items():
             asset_tags = soup.find_all(tag_type)
             for tag in asset_tags:
                 if tag.has_attr(attribute):
                     parsed_url = urlparse(tag[attribute])
                     if parsed_url.netloc == HOST or parsed_url.netloc == '':
                         root, file_extension = os.path.splitext(tag[attribute])
-                        if file_extension in fixt['asset_extensions']:
+                        if file_extension in extensions:
                             assert 'ru-hexlet-io-courses_files' in root
                             assert 'http' not in root
 
