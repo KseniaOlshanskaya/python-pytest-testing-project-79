@@ -124,5 +124,5 @@ def download(url: str, output: str = None):
             file.write(final_page)
     except PermissionError as e:
         raise Exception() from e
-
+    logger.info(f'Target file exists: {os.path.exists(target_page_path)}')
     return target_page_path
