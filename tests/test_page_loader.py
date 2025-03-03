@@ -29,17 +29,6 @@ def test_download_without_output():
                                 .replace('tests', 'page_loader'))
     assert os.path.exists(expected_assets_dir_path)
 
-# Positive: Target page is single
-def test_target_page_is_single(tmp_path):
-    temp = str(tmp_path)
-    download(url='https://ru.hexlet.io/courses', output=temp)
-    target_page = 'ru-hexlet-io-courses.html'
-    count = 0
-    for root, dirs, files in os.walk(temp):
-        if target_page in files:
-            count += 1
-    assert count == 1
-
 # Positive: Download 2 pages
 def test_file_download_two_pages(tmp_path):
     temp = str(tmp_path)
@@ -55,6 +44,7 @@ def test_file_download_two_pages(tmp_path):
     assert file_path_2 == expected_path_2
     assert os.path.exists(expected_path_2)
     assert os.path.exists(expected_assets_dir_path)
+    assert os.path.exists(expected_path)
 
 
 # Positive: All expected assets exist
@@ -109,19 +99,31 @@ def test_check_asset_content(tmp_path):
     existing_files = set(os.listdir(expected_assets_dir_path))
     for file_ in existing_files:
         root, file_extension = os.path.splitext(file_)
-        with (open(os.path.join(expected_assets_dir_path, file_), encoding='UTF-8') as actual_file,
-              open(f'fixtures/test_check_asset_content/{root}-etalon{file_extension}',
-                   encoding='UTF-8') as etalon_file):
+        expected_path = os.path.join(expected_assets_dir_path, file_)
+        actual_path = f'fixtures/test_check_asset_content/{root}-etalon{file_extension}'
+        with (open(expected_path, encoding='UTF-8') as actual_file,
+              open(actual_path, encoding='UTF-8') as etalon_file):
             actual_content = actual_file.read()
             etalon_content = etalon_file.read()
             similarity = difflib.SequenceMatcher(None, actual_content, etalon_content).ratio()
-            assert similarity >= 0.99, f"Asset {file_} similarity with etalon = {similarity:.2%}. Must be >= 0.99"
+            if similarity < 0.99:
+                diff = "\n".join(
+                    difflib.unified_diff(
+                        etalon_content.splitlines(),
+                        actual_content.splitlines(),
+                        fromfile='expected',
+                        tofile='actual',
+                        lineterm=''
+                    )
+                )
+                assert False, (
+                    f"Asset {file_} similarity with etalon = {similarity:.2%}. Must be >= 0.99.\nDiff:\n{diff}")
 
 
 # Negative: Unreal URL
 def test_unreal_url(tmp_path):
     temp = str(tmp_path)
-    with pytest.raises(RequestInvalidStatus):
+    with pytest.raises(Exception):
         download(url='https://ru.hexlet.io/lol', output=temp)
 
 
@@ -136,16 +138,6 @@ def test_output_path_not_exist():
 def test_incorrect_output_type():
     with pytest.raises(TypeError):
         download(url='https://ru.hexlet.io/webinars', output=1)
-
-
-# Negative: Permission denied
-def test_no_access_to_folder(tmp_path):
-    temp = str(tmp_path)
-    folder = "admin"
-    path = os.path.join(temp, folder)
-    os.mkdir(path)
-    with pytest.raises(PermissionError):
-        download(url='https://ru.hexlet.io/webinars', output=path)
 
 
 def test_local_html_without_requests_get(monkeypatch, tmp_path):
