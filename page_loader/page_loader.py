@@ -119,7 +119,10 @@ def download(url: str, output: str = None):
                     scheme=parsed_url.scheme)
 
     final_page = str(soup.prettify())
-    with open(target_page_path, "w", encoding="utf-8") as file:
-        file.write(final_page)
+    try:
+        with open(target_page_path, "w", encoding="utf-8") as file:
+            file.write(final_page)
+    except PermissionError as e:
+        raise Exception() from e
 
     return target_page_path
