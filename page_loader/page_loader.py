@@ -6,9 +6,6 @@ from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
-from requests import Timeout, RequestException, ConnectionError
-from requests.exceptions import MissingSchema, InvalidURL
-from urllib3.exceptions import NameResolutionError
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -36,8 +33,10 @@ def modify_name(url, extension=True):
 
     root, file_extension = os.path.splitext(url)
     file_extension = '.html' if file_extension == '' else file_extension
-    file_name = re.sub(r'^[a-zA-Z]+://', '', root)  # remove schema
-    file_name = re.sub(r'[^A-Za-z0-9]', '-', file_name)  # change symbols to -
+    # remove schema
+    file_name = re.sub(r'^[a-zA-Z]+://', '', root)
+    # change symbols to -
+    file_name = re.sub(r'[^A-Za-z0-9]', '-', file_name)
     file_name = re.sub(r'[^A-Za-z0-9]+$', '', file_name)
 
     logger.info(f'Local name created: {file_name}')
@@ -48,12 +47,6 @@ def modify_name(url, extension=True):
 
 def download_asset(url, path_to_save):
     logger.info(f'Downloading asset... {path_to_save}')
-    """if len(os.path.basename(path_to_save)) > 260: # Windows limit
-        logger.info(f'Asset cannot be downloaded as its name length > 260')
-        return
-    if re.search(r'[?:*"<>\|]', os.path.basename(path_to_save)):
-        logger.info(f'Asset cannot be downloaded as its name consists of unacceptable symbols')
-        return"""
     try:
         response = requests.get(url)
         logger.info(f'Server response: {response}')
@@ -69,16 +62,20 @@ def download_assets(soup, assets_dir_name, assets_dir_path, host, scheme):
     for tag_type, attribute in ASSET_TAGS.items():
         asset_tags = soup.find_all(tag_type)
         for tag in asset_tags:
-            if tag.has_attr(attribute):  # If tag has href or src attribute
+            # If tag has href or src attribute
+            if tag.has_attr(attribute):
                 parsed_url = urlparse(tag[attribute])
                 if parsed_url.netloc == host or parsed_url.netloc == '':
-                    asset_url = tag[attribute] if scheme in tag[attribute] else (scheme + '://' + host + tag[attribute])
+                    asset_url = (
+                        tag)[attribute] if scheme in tag[attribute] else (
+                            scheme + '://' + host + tag[attribute])
                     asset_name = modify_name(url=asset_url)
                     full_asset_path = os.path.join(assets_dir_path, asset_name)
                     download_asset(url=asset_url, path_to_save=full_asset_path)
                     tag[attribute] = os.path.join(assets_dir_name, asset_name)
                     logger.info(
-                        f'Asset downloaded correctly in: {full_asset_path}. Exists: {os.path.exists(full_asset_path)}')
+                        f'Asset downloaded correctly in: {full_asset_path}. '
+                        f'Exists: {os.path.exists(full_asset_path)}')
 
 
 def download_page(url):
@@ -101,7 +98,8 @@ def download(url: str, output: str = None):
     check_target_page_schema(url)
     page = download_page(url)
     page_name = modify_name(url)
-    output_folder = output if output else os.path.join(os.path.dirname(__file__))
+    output_folder = output if output else (
+        os.path.join(os.path.dirname(__file__)))
     logger.info(f'Output folder: {output_folder}')
     target_page_path = os.path.join(output_folder, page_name)
     assets_dir_name = modify_name(url=url, extension=False) + '_files'
