@@ -22,11 +22,9 @@ def test_file_download_positive(tmp_path):
 # Positive: existing url, no output provided
 def test_download_without_output():
     file_path = download(url='https://ru.hexlet.io/courses')
-    expected_path = (os.path.join(os.path.dirname(__file__), 'ru-hexlet-io-courses.html')
-                     .replace('tests', 'page_loader'))
+    expected_path = (os.path.join(os.path.dirname(__file__), 'ru-hexlet-io-courses.html'))
     assert file_path == expected_path
-    expected_assets_dir_path = (os.path.join(os.path.dirname(__file__), 'ru-hexlet-io-courses_files')
-                                .replace('tests', 'page_loader'))
+    expected_assets_dir_path = (os.path.join(os.path.dirname(__file__), 'ru-hexlet-io-courses_files'))
     assert os.path.exists(expected_assets_dir_path)
 
 # Positive: Download 2 pages
