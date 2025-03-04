@@ -23,10 +23,12 @@ def test_file_download_positive(tmp_path):
 # Positive: existing url, no output provided
 def test_download_without_output():
     file_path = download(url='https://ru.hexlet.io/courses')
-    expected_path = '/project/.venv/lib/python3.13/site-packages/page_loader/ru-hexlet-io-courses.html'
+    expected_path = ('/project/.venv/lib/python3.13/site-packages'
+                     '/page_loader/ru-hexlet-io-courses.html')
     assert file_path == expected_path
-    expected_assets_dir_path = (os.path.join('/project/.venv/lib/python3.13/site-packages/page_loader',
-                                             'ru-hexlet-io-courses_files'))
+    expected_assets_dir_path = (os.path.join(
+        '/project/.venv/lib/python3.13/site-packages/page_loader',
+        'ru-hexlet-io-courses_files'))
     assert os.path.exists(expected_assets_dir_path)
 
 
@@ -35,13 +37,15 @@ def test_file_download_two_pages(tmp_path):
     temp = str(tmp_path)
     file_path = download(url='https://ru.hexlet.io/courses', output=temp)
     expected_path = os.path.join(temp, 'ru-hexlet-io-courses.html')
-    expected_assets_dir_path = os.path.join(temp, 'ru-hexlet-io-courses_files')
+    expected_assets_dir_path = os.path.join(temp,
+                                            'ru-hexlet-io-courses_files')
     assert file_path == expected_path
     assert os.path.exists(expected_path)
     assert os.path.exists(expected_assets_dir_path)
     file_path_2 = download(url='https://ru.hexlet.io/webinars', output=temp)
     expected_path_2 = os.path.join(temp, 'ru-hexlet-io-webinars.html')
-    expected_assets_dir_path = os.path.join(temp, 'ru-hexlet-io-webinars_files')
+    expected_assets_dir_path = os.path.join(temp,
+                                            'ru-hexlet-io-webinars_files')
     assert file_path_2 == expected_path_2
     assert os.path.exists(expected_path_2)
     assert os.path.exists(expected_assets_dir_path)
@@ -52,7 +56,8 @@ def test_file_download_two_pages(tmp_path):
 def test_assets_exist(tmp_path):
     temp = str(tmp_path)
     download(url='https://ru.hexlet.io/courses', output=temp)
-    required_files = os.listdir(f'{os.path.dirname(__file__)}/fixtures/test_all_assets_exist')
+    required_files = os.listdir(
+        f'{os.path.dirname(__file__)}/fixtures/test_all_assets_exist')
     expected_assets_dir_path = os.path.join(temp, 'ru-hexlet-io-courses_files')
     assert os.path.exists(expected_assets_dir_path)
     for file in required_files:
@@ -62,9 +67,15 @@ def test_assets_exist(tmp_path):
 
 def test_image_asset_exist(tmp_path):
     temp = str(tmp_path)
-    download(url='https://en.wikipedia.org/wiki/Robert_II_of_Scotland', output=temp)
-    expected_assets_dir_path = os.path.join(temp, 'en-wikipedia-org-wiki-Robert-II-of-Scotland_files')
-    file_path = os.path.join(expected_assets_dir_path, 'en-wikipedia-org-static-apple-touch-wikipedia.png')
+    download(
+        url='https://en.wikipedia.org/wiki/Robert_II_of_Scotland',
+        output=temp)
+    expected_assets_dir_path = (
+        os.path.join(temp,
+                     'en-wikipedia-org-wiki-Robert-II-of-Scotland_files'))
+    file_path = (
+        os.path.join(expected_assets_dir_path,
+        'en-wikipedia-org-static-apple-touch-wikipedia.png'))
     assert os.path.exists(file_path)
 
 
@@ -101,13 +112,16 @@ def test_check_asset_content(tmp_path):
     for file_ in existing_files:
         root, file_extension = os.path.splitext(file_)
         expected_path = os.path.join(expected_assets_dir_path, file_)
-        actual_path = (f'{os.path.dirname(__file__)}/fixtures/test_check_asset_content/'
-                       f'{root}-etalon{file_extension}')
+        actual_path = (
+            f'{os.path.dirname(__file__)}/fixtures/test_check_asset_content/'
+            f'{root}-etalon{file_extension}')
         with (open(expected_path, encoding='UTF-8') as actual_file,
               open(actual_path, encoding='UTF-8') as etalon_file):
             actual_content = actual_file.read()
             etalon_content = etalon_file.read()
-            similarity = difflib.SequenceMatcher(None, actual_content, etalon_content).ratio()
+            similarity = difflib.SequenceMatcher(None,
+                                                 actual_content,
+                                                 etalon_content).ratio()
             if similarity < 0.95:
                 diff = "\n".join(
                     difflib.unified_diff(
@@ -119,28 +133,31 @@ def test_check_asset_content(tmp_path):
                     )
                 )
                 assert False, (
-                    f"Asset {file_} similarity with etalon = {similarity:.2%}. "
-                    f"Must be >= 0.95.\nDiff:\n{diff}")
+                    f"Asset {file_} similarity with etalon = {similarity:.2%}."
+                    f" Must be >= 0.95.\nDiff:\n{diff}")
 
 
 # Negative: Unreal URL
 def test_unreal_url(tmp_path):
     temp = str(tmp_path)
     with pytest.raises(Exception):
-        download(url='https://ru.hexlet.io/lol', output=temp)
+        download(url='https://ru.hexlet.io/lol',
+                 output=temp)
 
 
 # Negative: Unreal output folder
 def test_output_path_not_exist():
     unexpected_path = 'файл/'
     with pytest.raises(FileNotFoundError):
-        download(url='https://ru.hexlet.io/webinars', output=unexpected_path)
+        download(url='https://ru.hexlet.io/webinars',
+                 output=unexpected_path)
 
 
 # Negative: Incorrect folder type
 def test_incorrect_output_type():
     with pytest.raises(TypeError):
-        download(url='https://ru.hexlet.io/webinars', output=1)
+        download(url='https://ru.hexlet.io/webinars',
+                 output=1)
 
 
 def test_local_html_without_requests_get(monkeypatch, tmp_path):
@@ -156,7 +173,8 @@ def test_local_html_without_requests_get(monkeypatch, tmp_path):
 
         path_to_fixture = (
             os.path.join(os.path.dirname(__file__),
-                         'fixtures/test_local_html_without_requests_get/localhost-blog-about.html'))
+                         'fixtures/test_local_html_without_requests_get/'
+                         'localhost-blog-about.html'))
         with open(path_to_fixture, 'r', encoding='UTF-8') as site:
             response = site.read()
         return FakeResponse(response)
