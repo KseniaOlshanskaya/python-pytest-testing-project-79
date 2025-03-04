@@ -19,6 +19,7 @@ def test_file_download_positive(tmp_path):
     assert file_path == expected_path
     assert os.path.exists(expected_path)
 
+
 # Positive: existing url, no output provided
 def test_download_without_output():
     file_path = download(url='https://ru.hexlet.io/courses')
@@ -27,6 +28,7 @@ def test_download_without_output():
     expected_assets_dir_path = (os.path.join('/project/.venv/lib/python3.13/site-packages/page_loader',
                                              'ru-hexlet-io-courses_files'))
     assert os.path.exists(expected_assets_dir_path)
+
 
 # Positive: Download 2 pages
 def test_file_download_two_pages(tmp_path):
@@ -70,8 +72,8 @@ def test_image_asset_exist(tmp_path):
 def test_assets_href_change(tmp_path):
     temp = str(tmp_path)
     tags = {"img": "src",
-                  "link": "href",
-                  "script": "src"}
+            "link": "href",
+            "script": "src"}
     extensions = [".png", ".jpeg"]
 
     file_path = download(url='https://ru.hexlet.io/courses', output=temp)
@@ -99,7 +101,8 @@ def test_check_asset_content(tmp_path):
     for file_ in existing_files:
         root, file_extension = os.path.splitext(file_)
         expected_path = os.path.join(expected_assets_dir_path, file_)
-        actual_path = f'{os.path.dirname(__file__)}/fixtures/test_check_asset_content/{root}-etalon{file_extension}'
+        actual_path = (f'{os.path.dirname(__file__)}/fixtures/test_check_asset_content/'
+                       f'{root}-etalon{file_extension}')
         with (open(expected_path, encoding='UTF-8') as actual_file,
               open(actual_path, encoding='UTF-8') as etalon_file):
             actual_content = actual_file.read()
@@ -116,7 +119,8 @@ def test_check_asset_content(tmp_path):
                     )
                 )
                 assert False, (
-                    f"Asset {file_} similarity with etalon = {similarity:.2%}. Must be >= 0.95.\nDiff:\n{diff}")
+                    f"Asset {file_} similarity with etalon = {similarity:.2%}. "
+                    f"Must be >= 0.95.\nDiff:\n{diff}")
 
 
 # Negative: Unreal URL
@@ -141,6 +145,7 @@ def test_incorrect_output_type():
 
 def test_local_html_without_requests_get(monkeypatch, tmp_path):
     temp = str(tmp_path)
+
     def fake_get(url):
         class FakeResponse:
             def __init__(self, text):
@@ -148,7 +153,10 @@ def test_local_html_without_requests_get(monkeypatch, tmp_path):
 
             def ok(self):
                 return bool(self)
-        path_to_fixture = os.path.join(os.path.dirname(__file__), 'fixtures/test_local_html_without_requests_get/localhost-blog-about.html')
+
+        path_to_fixture = (
+            os.path.join(os.path.dirname(__file__),
+                         'fixtures/test_local_html_without_requests_get/localhost-blog-about.html'))
         with open(path_to_fixture, 'r', encoding='UTF-8') as site:
             response = site.read()
         return FakeResponse(response)
